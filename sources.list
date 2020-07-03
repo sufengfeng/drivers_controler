@@ -1,0 +1,6 @@
+deb http://mirror.tuna.tsinghua.edu.cn/raspbian/raspbian/ buster main  contrib non-free rpi
+deb-src http://mirror.tuna.tsinghua.edu.cn/raspbian/raspbian/ buster main contrib non-free rpi
+#deb http://raspbian.raspberrypi.org/raspbian/ buster main contrib non-free rpi
+# Uncomment line below then 'apt-get update' to enable 'apt-get source'
+#deb-src http://raspbian.raspberrypi.org/raspbian/ buster main contrib non-free rpi
+#deb http://mirrors.aliyun.com/raspbian/raspbian/ stretch main contrib non-free rpi
