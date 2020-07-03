@@ -29,12 +29,8 @@
 #include <sys/syscall.h>
 #include <unistd.h>
 #include <string.h>
-
 using namespace std;
-
 #define psln(x)  LOG(ERROR) << #x " = " << (x)
-
-
 //程序状态控制状态
 typedef enum {
 	DRV_STANDBY=0,
@@ -56,7 +52,7 @@ public:
 
 public:
 	uint8_t g_nRunStatus=DRV_STANDBY;			//程序运行状态
-	uint8_t g_nStatus=IDEL;						//状态机运行状态
+	uint8_t g_nCurrentStatus=IDEL;						//状态机运行状态
 
 	uint32_t g_nBitrate=1000000;				//can波特率
 
