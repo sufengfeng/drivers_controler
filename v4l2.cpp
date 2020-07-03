@@ -10,6 +10,7 @@
 #include "global.h"
 #include <iostream>
 #include <string>
+#include "v4l2.h"
 using namespace std;
 
 struct buffer
@@ -25,7 +26,7 @@ int v4l2_init(void){
 	return 0;
 }
 //保存图片
-int SavePicture(char * filenName,int exposure){
+int SavePicture(string filenName,uint32_t exposure){
 
 	return 0;
 }
@@ -154,7 +155,8 @@ int v4l2MainTest(void)
 	close(fd_video);
 	fclose(fp);
 	printf("capture jpg finish..\n");
-// system("eog -w /root/test.jpg &");
+	// system("eog -w /root/test.jpg &");
+	return 0;
 }
 
 

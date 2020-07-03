@@ -7,7 +7,7 @@ using namespace std;
 
 int v4l2_init(void);
 int GetV4l2Status(void);
-int SavePicture(char * filenName,int exposure);
+int SavePicture(string filenName,uint32_t exposure);
 int v4l2_close(void);
 
 #endif

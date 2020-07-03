@@ -24,20 +24,20 @@ int CanOpen(int bitrate){
     system("sudo ifconfig can0 up");
 
     int ret;
-    int s, nbytes;
+
     struct sockaddr_can addr;
     struct ifreq ifr;
     
     //1.Create socket
-    s = socket(PF_CAN, SOCK_RAW, CAN_RAW);
-    if (s < 0) {
+    fd_can = socket(PF_CAN, SOCK_RAW, CAN_RAW);
+    if (fd_can < 0) {
         perror("socket PF_CAN failed");
         return -1;
     }
     
     //2.Specify can0 device
     strcpy(ifr.ifr_name, "can0");
-    ret = ioctl(s, SIOCGIFINDEX, &ifr);
+    ret = ioctl(fd_can, SIOCGIFINDEX, &ifr);
     if (ret < 0) {
         perror("ioctl failed");
         return -1;
@@ -46,7 +46,7 @@ int CanOpen(int bitrate){
     //3.Bind the socket to can0
     addr.can_family = AF_CAN;
     addr.can_ifindex = ifr.ifr_ifindex;
-    ret = bind(s, (struct sockaddr *)&addr, sizeof(addr));
+    ret = bind(fd_can, (struct sockaddr *)&addr, sizeof(addr));
     if (ret < 0) {
         perror("bind failed");
         return -1;
@@ -54,10 +54,11 @@ int CanOpen(int bitrate){
     
     //4.Disable filtering rules, do not receive packets, only send
     //setsockopt(s, SOL_CAN_RAW, CAN_RAW_FILTER, NULL, 0);
-    return s;
+
+    return fd_can;
 }
 //循环发送字符串
-int CanSend(int fd,int can_id,char *canData,int dataLen)
+int CanSend(int can_id,char *canData,int dataLen)
 {
     printf("can_id  = 0x%X can_dlc = %d\r\n", can_id,dataLen);
     int nbytes;
@@ -77,7 +78,7 @@ int CanSend(int fd,int can_id,char *canData,int dataLen)
        memcpy(frame.data,canData+sendCount,frame.can_dlc);
         //for(int i = 0; i < frame.can_dlc; i++) printf("data[%d] = %d\r\n", i, frame.data[i]);
         //6.Send message
-        nbytes = write(fd, &frame, sizeof(frame)); 
+        nbytes = write(fd_can, &frame, sizeof(frame));
         if(nbytes != sizeof(frame)) {
             fprintf(stderr,"can send error!! \n");
             return -1;
@@ -86,12 +87,12 @@ int CanSend(int fd,int can_id,char *canData,int dataLen)
     return 0;
 }
 //阻塞接收数据
-int CanReceive(int fd,int &can_id,char *canData,int &dataLen)
+int CanReceive(int &can_id,char canData[],int &dataLen)
 {
     struct can_frame frame;
     //5.Receive data and exit
     int nbytes=-1;
-    nbytes = read(fd, &frame, sizeof(frame));
+    nbytes = read(fd_can, &frame, sizeof(frame));
     if(nbytes <0) {    
         fprintf(stderr,"can receive error!! \n");
         return -1;
@@ -104,9 +105,10 @@ int CanReceive(int fd,int &can_id,char *canData,int &dataLen)
     return 0;
 }
 
-int CanClose(int fd){
-    close(fd);
+int CanClose(){
+    close(fd_can);
     system("sudo ifconfig can0 down");
+    return 0;
 }
    
 //测试函数
@@ -118,6 +120,7 @@ int canMainTest(void){
 		return -1;
 	}
 	char sendData[]="hello";
-	CanSend(can_fd,0x1a,sendData,sizeof(sendData));
-	CanClose(can_fd);
+	CanSend(0x1a,sendData,sizeof(sendData));
+	CanClose();
+	return 0;
 }

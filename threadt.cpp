@@ -7,20 +7,50 @@
 
 #include "threadt.h"
 #include "global.h"
-
-
+#include "sensor.h"
+#include "v4l2.h"
 #include <pthread.h>
+#include <string>
+#include "can_dev.h"
+using namespace std;
 
 //传感器处理线程
 void *SensorHanle(void*param){
-
-
+	int iRet;
+	while(1){
+		if (g_GlobalParam.g_nRunStatus== STATE::DRV_STANDBY|| g_GlobalParam.g_nRunStatus== STATE::DRV_PAUSED) {
+			mSleep(g_GlobalParam.g_nIdleSleepTime);                 //待机或者挂起
+			continue;
+		}
+		iRet= GetDs18b20Value(g_GlobalParam.g_nDs18b20Value);
+		if(iRet!=0)
+			cout<<"GetDs18b20Value failed!!!"<<endl;
+		iRet=GetLightValue(g_GlobalParam.g_nLightValue);
+		if(iRet!=0)
+			cout<<"GetLightValue failed!!!"<<endl;
+		iRet=GetLimitValue(g_GlobalParam.g_nLimitValue);
+		if(iRet!=0)
+			cout<<"GetLimitValue failed!!!"<<endl;
+		mSleep(g_GlobalParam.g_nPeriodSensor);
+	}
 	return (void*)0;
 }
+
+#define JPG_FILENAME "/tmp/current.jpg"			//当前保存图片的路径
+
 //摄像头处理线程
 void *CameraHanle(void*param){
-
-
+	int iRet;
+	while(1){
+		if (g_GlobalParam.g_nRunStatus== STATE::DRV_STANDBY|| g_GlobalParam.g_nRunStatus== STATE::DRV_PAUSED) {
+			mSleep(g_GlobalParam.g_nIdleSleepTime);                 //待机或者挂起
+			continue;
+		}
+		iRet= SavePicture(JPG_FILENAME,g_GlobalParam.g_nExposure);
+		if(iRet!=0)
+				cout<<"SavePicture failed!!!"<<endl;
+		mSleep(g_GlobalParam.g_nPeriodSensor);
+	}
 	return (void*)0;
 }
 
@@ -40,8 +70,15 @@ command:
 */
 //状态机线程
 void *StatusHanle(void*param){
-
-
+	int iRet=-1;
+	int can_id;
+	int len=0;
+	char dataBuff[50];
+	while(1){
+		iRet =CanReceive(can_id,dataBuff,len);//阻塞等待
+		if(iRet!=0)
+				cout<<"CanReceive failed!!!"<<endl;
+	}
 	return (void*)0;
 }
 

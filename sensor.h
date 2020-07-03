@@ -1,9 +1,9 @@
 #ifndef __SENSOR__H
 #define __SENSOR__H
-
+#include "global.h"
 
 int GetDs18b20Value(int &retValue);
-int GetFC33Value(int &retValue);
-int GetIRValue(int &retValue);
+int GetLightValue(int &retValue);
+int GetLimitValue(int &retValue);
 
 #endif
