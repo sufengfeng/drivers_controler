@@ -9,6 +9,8 @@
 #include "global.h"
 #include <iostream>
 #include "can_dev.h"
+#include "sensor.h"
+#include "v4l2.h"
 
 #define gettid() syscall(__NR_gettid) //获得线程ID
 
@@ -20,14 +22,29 @@ GlobalParam::GlobalParam() {
 GlobalParam::~GlobalParam() {
 	// TODO Auto-generated destructor stub
 }
+
 //初始化硬件设备
 int  init_devices(void ){
-	int can_fd=CanOpen(g_GlobalParam.g_nBitrate);
-	if(can_fd<0){
-		fprintf(stderr,"can send error!! \n");
-		return -1;
-	}
-	int init_v4l2();
+        int iRet=-1;
+        iRet=CanInit();         //初始化can
+        if (iRet<0)
+        {
+                fprintf(stderr,"CanInit error!! \n");
+                return -1;
+        }
+	iRet=V4l2Init();            //初始化摄像头
+        if (iRet<0)
+        {
+                fprintf(stderr,"V4l2Init error!! \n");
+                return -1;
+        }
+        iRet=SensorInit();           //初始化传感器
+        if (iRet<0)
+        {
+                fprintf(stderr,"SensorInit error!! \n");
+                return -1;
+        }
+        fprintf(stderr,"Hardware Initial successfully!! \n");
 	return 0;
 }
 

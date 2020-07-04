@@ -55,11 +55,12 @@ public:
 	uint8_t g_nCurrentStatus=IDEL;						//状态机运行状态
 
 	uint32_t g_nBitrate=1000000;				//can波特率
+	uint8_t g_nCanID=0x1a;						//默认can ID
 
 	uint16_t g_nIdleSleepTime=1000;				//空闲等待时间
 	uint16_t g_nPeriodSensor=100;				//间隔100ms巡视传感器
-	uint16_t g_nPeriodV4l2=1000;				//间隔1s读取一次图片
-	uint32_t g_nExposure=1000;					//曝光时间
+	uint16_t g_nPeriodV4l2=3000;				//间隔1s读取一次图片
+	uint32_t g_nExposure=4;					//曝光时间
 
 	int g_nLightValue=0;					//光电传感器值
 	int g_nLimitValue=0;					//限位开关值
